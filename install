@@ -1,0 +1,41 @@
+#!/bin/bash
+
+cd "$(dirname $0)"
+link_directory="$PWD/link"
+cd -
+
+# Helpers
+
+describe() {
+
+    echo -e "\n\033[1m\033[34m$1\033[0m\n"
+}
+
+# Install configurations
+
+describe "Linking configurations..."
+
+for file in $(find "$link_directory" -type f); do
+
+    relative_path="${file#$link_directory/}"
+    target_directory="$HOME/$(dirname $relative_path)"
+
+    # Do not override existing configuration
+    if [ -f "$HOME/$relative_path" ]; then
+        echo "Configuration “"$relative_path"” already exists. Skipping..."
+        continue
+    fi
+
+    # If necessary create directory for configuration
+    if [ ! -d "$target_directory" ]; then
+        echo "Creating directory “"$target_directory"” for configuration..."
+        mkdir -p "$target_directory"
+    fi
+
+    # Create symlink for configuration
+    echo "Symlinking “"$relative_path"” to “"$file"”..."
+    ln -s "$file" "$target_directory"
+
+done
+
+describe "Done."
