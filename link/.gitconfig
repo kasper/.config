@@ -1,5 +1,6 @@
 [user]
 	name = Kasper Hirvikoski
 	email = kasper.hirvikoski@gmail.com
+	signingkey = 9693AAEF
 [push]
 	default = simple
