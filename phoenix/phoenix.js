@@ -6,6 +6,15 @@ var controlAltShift = [ 'ctrl', 'alt', 'shift' ];
 var margin = 10;
 var increment = 0.1;
 
+/* Preferences */
+
+Phoenix.set({
+
+    'daemon': true,
+    'openAtLogin': true
+
+});
+
 /* Position */
 
 var Position = {
