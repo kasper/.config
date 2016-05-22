@@ -21,7 +21,3 @@ export JAVA_HOME=$(/usr/libexec/java_home)
 
 # rbenv
 eval "$(rbenv init -)"
-
-# Go
-export GOPATH="$HOME/Ohjelmointi/Go"
-export PATH="$PATH:$GOPATH/bin"
