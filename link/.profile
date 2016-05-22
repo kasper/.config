@@ -15,9 +15,6 @@ alias serve='python -m SimpleHTTPServer'
 alias tar-create='tar cvzf'
 alias tar-extract='tar xvzf'
 
-## Apps
-alias coda='open -a "Coda 2"'
-
 # Java
 export JAVA_HOME=$(/usr/libexec/java_home)
 
