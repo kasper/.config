@@ -10,8 +10,8 @@ var increment = 0.1;
 
 Phoenix.set({
 
-    'daemon': true,
-    'openAtLogin': true
+    daemon: true,
+    openAtLogin: true
 
 });
 
