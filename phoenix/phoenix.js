@@ -1,225 +1,134 @@
-'use strict';
+#!/usr/bin/env coffee -p
 
-var controlShift = [ 'ctrl', 'shift' ];
-var controlAltShift = [ 'ctrl', 'alt', 'shift' ];
-var margin = 10;
-var increment = 0.1;
-
-/* Preferences */
-
-Phoenix.set({
-  daemon: true,
+# Preferences
+Phoenix.set
+  daemon: true
   openAtLogin: true
-});
 
-/* Position */
+# Globals
+INCREMENT = 0.05
+CONTROL_SHIFT = [ 'ctrl', 'shift' ]
 
-var Position = {
+# Relative Directions
+LEFT = 'left'
+RIGHT = 'right'
+CENTRE = 'centre'
 
-  central: function (frame, window) {
-    return {
-      x: frame.x + ((frame.width - window.width) / 2),
-      y: frame.y + ((frame.height - window.height) / 2)
-    };
-  },
+# Cardinal Directions
+NW = 'nw'
+NE = 'ne'
+SE = 'se'
+SW = 'sw'
 
-  top: function (frame, window) {
-    return {
-      x: window.x,
-      y: frame.y
-    };
-  },
+class ChainWindow
 
-  bottom: function (frame, window) {
-    return {
-      x: window.x,
-      y: (frame.y + frame.height) - window.height
-    };
-  },
+  constructor: (@window, @margin = 10) ->
+    @parent = @window.screen().visibleFrameInRectangle()
+    @update()
 
-  left: function (frame, window) {
-    return {
-      x: frame.x,
-      y: window.y
-    };
-  },
+  update: ->
+    @frame = @window.frame()
+    @difference =
+      width: @parent.width - @frame.width
+      height: @parent.height - @frame.height
 
-  right: function (frame, window) {
-    return {
-      x: (frame.x + frame.width) - window.width,
-      y: window.y
-    };
-  },
+  to: (direction) ->
 
-  topLeft: function (frame, window, margin) {
-    return {
-      x: Position.left(frame, window).x + margin,
-      y: Position.top(frame, window).y + margin
-    };
-  },
+    # X-coordinate
+    switch direction
+      when NW, SW
+        @frame.x = @parent.x + @margin
+      when NE, SE
+        @frame.x = @parent.x + @difference.width - @margin
+      when CENTRE
+        @frame.x = @parent.x + (@difference.width / 2)
 
-  topRight: function (frame, window, margin) {
-    return {
-      x: Position.right(frame, window).x - margin,
-      y: Position.top(frame, window).y + margin
-    };
-  },
+    # Y-coordinate
+    switch direction
+      when NW, NE
+        @frame.y = @parent.y + @margin
+      when SE, SW
+        @frame.y = @parent.y + @difference.height - @margin
+      when CENTRE
+        @frame.y = @parent.y + (@difference.height / 2)
 
-  bottomLeft: function (frame, window, margin) {
-    return {
-      x: Position.left(frame, window).x + margin,
-      y: Position.bottom(frame, window).y - margin
-    };
-  },
+    this
 
-  bottomRight: function (frame, window, margin) {
-    return {
-      x: Position.right(frame, window).x - margin,
-      y: Position.bottom(frame, window).y - margin
-    };
-  }
-};
+  increment: (factor) ->
+    if factor.x?
+      delta = Math.min @parent.width * factor.x, @difference.width - @frame.x - @margin
+      @frame.width += delta
+    if factor.y?
+      delta = Math.min @parent.height * factor.y, @difference.height - @frame.y + @margin
+      @frame.height += delta
+    this
 
-/* Grid */
+  maximise: ->
+    @frame.width = @parent.width - (2 * @margin)
+    @frame.height = @parent.height - (2 * @margin)
+    this
 
-var Frame = {
-  width: 1,
-  height: 1,
-  half: {
-    width: 0.5,
-    height: 0.5
-  }
-};
+  halve: ->
+    @frame.width /= 2
+    this
 
-/* Window Functions */
+  fill: (direction) ->
+    @maximise()
+    @halve() if direction?
+    switch direction
+      when LEFT then @to NW
+      when RIGHT then @to NE
+      else @to NW
+    this
 
-Window.prototype.to = function (position) {
-  this.setTopLeft(position(this.screen().visibleFrameInRectangle(), this.frame(), margin));
-}
+  set: ->
+    @window.setFrame @frame
+    @update()
+    this
 
-Window.prototype.grid = function (x, y, reverse) {
+Window::chain = ->
+  new ChainWindow this
 
-  var frame = this.screen().visibleFrameInRectangle();
+# Position Bindings
 
-  var newWindowFrame = _(this.frame()).extend({
-    width: (frame.width * x) - (2 * margin),
-    height: (frame.height * y) - (2 * margin)
-  });
+Key.on 'q', CONTROL_SHIFT, ->
+  Window.focused()?.chain().to(NW).set()
 
-  var position = reverse ? Position.topRight(frame, newWindowFrame, margin) :
-                           Position.topLeft(frame, newWindowFrame, margin);
+Key.on 'w', CONTROL_SHIFT, ->
+  Window.focused()?.chain().to(NE).set()
 
-  this.setFrame(_(newWindowFrame).extend(position));
-}
+Key.on 's', CONTROL_SHIFT, ->
+  Window.focused()?.chain().to(SE).set()
 
-Window.prototype.reverseGrid = function (x, y) {
-  this.grid(x, y, true);
-}
+Key.on 'a', CONTROL_SHIFT, ->
+  Window.focused()?.chain().to(SW).set()
 
-Window.prototype.resize = function (multiplier) {
+Key.on 'z', CONTROL_SHIFT, ->
+  Window.focused()?.chain().to(CENTRE).set()
 
-  var frame = this.screen().visibleFrameInRectangle();
-  var newSize = this.size();
+# Size Bindings
 
-  if (multiplier.x) {
-    newSize.width += frame.width * multiplier.x;
-  }
+Key.on 'å', CONTROL_SHIFT, ->
+  Window.focused()?.chain().fill().set()
 
-  if (multiplier.y) {
-    newSize.height += frame.height * multiplier.y;
-  }
+Key.on 'o', CONTROL_SHIFT, ->
+  Window.focused()?.chain().fill(LEFT).set()
 
-  this.setSize(newSize);
-}
+Key.on 'p', CONTROL_SHIFT, ->
+  Window.focused()?.chain()
+    .fill(RIGHT)
+    .set()
+    .to(NE) # Ensure position for larger windows
+    .set()
 
-Window.prototype.increaseWidth = function () {
-  this.resize({ x: increment });
-}
+Key.on '¨', CONTROL_SHIFT, ->
+  Window.focused()?.chain().increment(y: -INCREMENT).set()
 
-Window.prototype.decreaseWidth = function () {
-  this.resize({ x: -increment });
-}
+Key.on "'", CONTROL_SHIFT, ->
+  Window.focused()?.chain().increment(y: INCREMENT).set()
 
-Window.prototype.increaseHeight = function () {
-  this.resize({ y: increment });
-}
+Key.on 'ö', CONTROL_SHIFT, ->
+  Window.focused()?.chain().increment(x: -INCREMENT).set()
 
-Window.prototype.decreaseHeight = function () {
-  this.resize({ y: -increment });
-}
-
-/* Position Bindings */
-
-Key.on('q', controlShift, function () {
-  Window.focused() && Window.focused().to(Position.topLeft);
-});
-
-Key.on('w', controlShift, function () {
-  Window.focused() && Window.focused().to(Position.topRight);
-});
-
-Key.on('a', controlShift, function () {
-  Window.focused() && Window.focused().to(Position.bottomLeft);
-});
-
-Key.on('s', controlShift, function () {
-  Window.focused() && Window.focused().to(Position.bottomRight);
-});
-
-Key.on('z', controlShift, function () {
-  Window.focused() && Window.focused().to(Position.central);
-});
-
-/* Grid Bindings */
-
-Key.on('p', controlShift, function () {
-  Window.focused() && Window.focused().grid(Frame.half.width, Frame.half.height);
-});
-
-Key.on('å', controlShift, function () {
-  Window.focused() && Window.focused().grid(Frame.width, Frame.half.height);
-});
-
-Key.on('ö', controlShift, function () {
-  Window.focused() && Window.focused().grid(Frame.half.width, Frame.height);
-});
-
-Key.on('ä', controlShift, function () {
-  Window.focused() && Window.focused().grid(Frame.width, Frame.height);
-});
-
-/* Reverse Grid Bindings */
-
-Key.on('å', controlAltShift, function () {
-  Window.focused() && Window.focused().reverseGrid(Frame.half.width, Frame.half.height);
-});
-
-Key.on('p', controlAltShift, function () {
-  Window.focused() && Window.focused().reverseGrid(Frame.width, Frame.half.height);
-});
-
-Key.on('ä', controlAltShift, function () {
-  Window.focused() && Window.focused().reverseGrid(Frame.half.width, Frame.height);
-});
-
-Key.on('ö', controlAltShift, function () {
-  Window.focused() && Window.focused().reverseGrid(Frame.width, Frame.height);
-});
-
-/* Resize Bindings */
-
-Key.on(',', controlShift, function () {
-  Window.focused() && Window.focused().increaseWidth();
-});
-
-Key.on('.', controlShift, function () {
-  Window.focused() && Window.focused().increaseHeight();
-});
-
-Key.on(',', controlAltShift, function () {
-  Window.focused() && Window.focused().decreaseWidth();
-});
-
-Key.on('.', controlAltShift, function () {
-  Window.focused() && Window.focused().decreaseHeight();
-});
+Key.on 'ä', CONTROL_SHIFT, ->
+  Window.focused()?.chain().increment(x: INCREMENT).set()
