@@ -35,6 +35,12 @@ class ChainWindow
       width: @parent.width - @frame.width
       height: @parent.height - @frame.height
 
+  screen: (screen) ->
+    @parent = screen.visibleFrameInRectangle()
+    @update()
+    @maximise() if @difference.width < 0 or @difference.height < 0
+    this
+
   to: (direction) ->
 
     # X-coordinate
@@ -91,6 +97,15 @@ class ChainWindow
 
 Window::chain = ->
   new ChainWindow this
+
+# Screen Bindings
+
+Key.on 'e', CONTROL_SHIFT, ->
+  window = Window.focused()
+  window?.chain()
+    .screen(window.screen().next())
+    .to(NW)
+    .set()
 
 # Position Bindings
 
