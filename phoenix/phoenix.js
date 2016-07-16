@@ -135,3 +135,9 @@ Key.on 'ö', CONTROL_SHIFT, ->
 
 Key.on 'ä', CONTROL_SHIFT, ->
   Window.focused()?.chain().resize(x: INCREMENT).set()
+
+# Focus Bindings
+
+Key.on '<', CONTROL_SHIFT, ->
+  [ ..., last ] = Window.recent()
+  last?.focus();
