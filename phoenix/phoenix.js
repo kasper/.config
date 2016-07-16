@@ -56,7 +56,7 @@ class ChainWindow
 
     this
 
-  increment: (factor) ->
+  resize: (factor) ->
     if factor.x?
       delta = Math.min @parent.width * factor.x, @difference.width + @difference.x - @margin
       @frame.width += delta
@@ -120,17 +120,17 @@ Key.on 'p', CONTROL_SHIFT, ->
   Window.focused()?.chain()
     .fill(RIGHT)
     .set()
-    .to(NE) # Ensure position for larger windows
+    .to(NE) # Ensure position for windows larger than expected
     .set()
 
 Key.on '¨', CONTROL_SHIFT, ->
-  Window.focused()?.chain().increment(y: -INCREMENT).set()
+  Window.focused()?.chain().resize(y: -INCREMENT).set()
 
 Key.on "'", CONTROL_SHIFT, ->
-  Window.focused()?.chain().increment(y: INCREMENT).set()
+  Window.focused()?.chain().resize(y: INCREMENT).set()
 
 Key.on 'ö', CONTROL_SHIFT, ->
-  Window.focused()?.chain().increment(x: -INCREMENT).set()
+  Window.focused()?.chain().resize(x: -INCREMENT).set()
 
 Key.on 'ä', CONTROL_SHIFT, ->
-  Window.focused()?.chain().increment(x: INCREMENT).set()
+  Window.focused()?.chain().resize(x: INCREMENT).set()
