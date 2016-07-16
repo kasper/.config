@@ -6,6 +6,7 @@ Phoenix.set
   openAtLogin: true
 
 # Globals
+HIDDEN_DOCK_MARGIN = 3
 INCREMENT = 0.05
 CONTROL_SHIFT = [ 'ctrl', 'shift' ]
 
@@ -61,7 +62,7 @@ class ChainWindow
       delta = Math.min @parent.width * factor.x, @difference.width + @difference.x - @margin
       @frame.width += delta
     if factor.y?
-      delta = Math.min @parent.height * factor.y, @difference.height - @frame.y + @margin
+      delta = Math.min @parent.height * factor.y, @difference.height - @frame.y + @margin + HIDDEN_DOCK_MARGIN
       @frame.height += delta
     this
 
