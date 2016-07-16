@@ -35,6 +35,11 @@ class ChainWindow
       width: @parent.width - @frame.width
       height: @parent.height - @frame.height
 
+  set: ->
+    @window.setFrame @frame
+    @update()
+    this
+
   screen: (screen) ->
     @parent = screen.visibleFrameInRectangle()
     @update()
@@ -88,11 +93,6 @@ class ChainWindow
       when LEFT then @to NW
       when RIGHT then @to NE
       else @to NW
-    this
-
-  set: ->
-    @window.setFrame @frame
-    @update()
     this
 
 Window::chain = ->
