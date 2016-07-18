@@ -75,7 +75,7 @@ class ChainWindow
   resize: (factor) ->
     difference = @difference()
     if factor.width?
-      delta = Math.min @parent.width * factor.width, difference.width + difference.x - @margin
+      delta = Math.min @parent.width * factor.width, difference.x + difference.width - @margin
       @frame.width += delta
     if factor.height?
       delta = Math.min @parent.height * factor.height, difference.height - @frame.y + @margin + HIDDEN_DOCK_MARGIN
@@ -122,7 +122,7 @@ Window::to = (direction, screen) ->
 # Fill in screen
 Window::fill = (direction, screen) ->
   window = @chain()
-  window.screen(screen) if screen?
+  window.screen screen if screen?
   window.fill(direction).set()
   window.to(NE).set() if direction is RIGHT # Ensure position for windows larger than expected
 
@@ -133,39 +133,39 @@ Window::resize = (factor) ->
 # Position Bindings
 
 Key.on 'q', CONTROL_SHIFT, ->
-  Window.focused()?.to(NW)
+  Window.focused()?.to NW
 
 Key.on 'w', CONTROL_SHIFT, ->
-  Window.focused()?.to(NE)
+  Window.focused()?.to NE
 
 Key.on 's', CONTROL_SHIFT, ->
-  Window.focused()?.to(SE)
+  Window.focused()?.to SE
 
 Key.on 'a', CONTROL_SHIFT, ->
-  Window.focused()?.to(SW)
+  Window.focused()?.to SW
 
 Key.on 'z', CONTROL_SHIFT, ->
-  Window.focused()?.to(CENTRE)
+  Window.focused()?.to CENTRE
 
 Key.on 'q', CONTROL_ALT_SHIFT, ->
   window = Window.focused()
-  window?.to(NW, window.screen().next())
+  window?.to NW, window.screen().next()
 
 Key.on 'w', CONTROL_ALT_SHIFT, ->
   window = Window.focused()
-  window?.to(NE, window.screen().next())
+  window?.to NE, window.screen().next()
 
 Key.on 's', CONTROL_ALT_SHIFT, ->
   window = Window.focused()
-  window?.to(SE, window.screen().next())
+  window?.to SE, window.screen().next()
 
 Key.on 'a', CONTROL_ALT_SHIFT, ->
   window = Window.focused()
-  window?.to(SW, window.screen().next())
+  window?.to SW, window.screen().next()
 
 Key.on 'z', CONTROL_ALT_SHIFT, ->
   window = Window.focused()
-  window?.to(CENTRE, window.screen().next())
+  window?.to CENTRE, window.screen().next()
 
 # Fill Bindings
 
@@ -173,36 +173,36 @@ Key.on 'å', CONTROL_SHIFT, ->
   Window.focused()?.fill()
 
 Key.on 'o', CONTROL_SHIFT, ->
-  Window.focused()?.fill(LEFT)
+  Window.focused()?.fill LEFT
 
 Key.on 'p', CONTROL_SHIFT, ->
-  Window.focused()?.fill(RIGHT)
+  Window.focused()?.fill RIGHT
 
 Key.on 'å', CONTROL_ALT_SHIFT, ->
   window = Window.focused()
-  window?.fill('', window.screen().next())
+  window?.fill '', window.screen().next()
 
 Key.on 'o', CONTROL_ALT_SHIFT, ->
   window = Window.focused()
-  window?.fill(LEFT, window.screen().next())
+  window?.fill LEFT, window.screen().next()
 
 Key.on 'p', CONTROL_ALT_SHIFT, ->
   window = Window.focused()
-  window?.fill(RIGHT, window.screen().next())
+  window?.fill RIGHT, window.screen().next()
 
 # Size Bindings
 
 Key.on 'ä', CONTROL_SHIFT, ->
-  Window.focused()?.resize(width: INCREMENT)
+  Window.focused()?.resize width: INCREMENT
 
 Key.on 'ö', CONTROL_SHIFT, ->
-  Window.focused()?.resize(width: -INCREMENT)
+  Window.focused()?.resize width: -INCREMENT
 
 Key.on "'", CONTROL_SHIFT, ->
-  Window.focused()?.resize(height: INCREMENT)
+  Window.focused()?.resize height: INCREMENT
 
 Key.on '¨', CONTROL_SHIFT, ->
-  Window.focused()?.resize(height: -INCREMENT)
+  Window.focused()?.resize height: -INCREMENT
 
 # Focus Bindings
 
