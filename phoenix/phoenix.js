@@ -25,60 +25,60 @@ SW = 'sw'
 class ChainWindow
 
   constructor: (@window, @margin = 10) ->
-    @parent = @window.screen().visibleFrameInRectangle()
-    @update()
-
-  # Update frames
-  update: ->
     @frame = @window.frame()
-    @difference =
-      x: @parent.x - @frame.x
-      y: @parent.y - @frame.y
-      width: @parent.width - @frame.width
-      height: @parent.height - @frame.height
+    @parent = @window.screen().visibleFrameInRectangle()
+
+  # Difference frame
+  difference: ->
+    x: @parent.x - @frame.x
+    y: @parent.y - @frame.y
+    width: @parent.width - @frame.width
+    height: @parent.height - @frame.height
 
   # Set frame
   set: ->
     @window.setFrame @frame
-    @update()
+    @frame = @window.frame()
     this
 
   # Move to screen
   screen: (screen) ->
     @parent = screen.visibleFrameInRectangle()
-    @update()
     this
 
   # Move to cardinal directions NW, NE, SE, SW or relative direction CENTRE
   to: (direction) ->
+
+    difference = @difference()
 
     # X-coordinate
     switch direction
       when NW, SW
         @frame.x = @parent.x + @margin
       when NE, SE
-        @frame.x = @parent.x + @difference.width - @margin
+        @frame.x = @parent.x + difference.width - @margin
       when CENTRE
-        @frame.x = @parent.x + (@difference.width / 2)
+        @frame.x = @parent.x + (difference.width / 2)
 
     # Y-coordinate
     switch direction
       when NW, NE
         @frame.y = @parent.y + @margin
       when SE, SW
-        @frame.y = @parent.y + @difference.height - @margin
+        @frame.y = @parent.y + difference.height - @margin
       when CENTRE
-        @frame.y = @parent.y + (@difference.height / 2)
+        @frame.y = @parent.y + (difference.height / 2)
 
     this
 
   # Resize SE-corner by factor
   resize: (factor) ->
+    difference = @difference()
     if factor.width?
-      delta = Math.min @parent.width * factor.width, @difference.width + @difference.x - @margin
+      delta = Math.min @parent.width * factor.width, difference.width + difference.x - @margin
       @frame.width += delta
     if factor.height?
-      delta = Math.min @parent.height * factor.height, @difference.height - @frame.y + @margin + HIDDEN_DOCK_MARGIN
+      delta = Math.min @parent.height * factor.height, difference.height - @frame.y + @margin + HIDDEN_DOCK_MARGIN
       @frame.height += delta
     this
 
@@ -95,13 +95,14 @@ class ChainWindow
 
   # Fit to screen
   fit: ->
-    @maximise() if @difference.width < 0 or @difference.height < 0
+    difference = @difference()
+    @maximise() if difference.width < 0 or difference.height < 0
     this
 
   # Fill relatively to LEFT or RIGHT-side of screen, or fill whole screen
   fill: (direction) ->
     @maximise()
-    @halve() if direction?
+    @halve() if direction in [ LEFT, RIGHT ]
     switch direction
       when LEFT then @to NW
       when RIGHT then @to NE
@@ -117,6 +118,13 @@ Window::to = (direction, screen) ->
   window = @chain()
   window.screen(screen).fit() if screen?
   window.to(direction).set()
+
+# Fill in screen
+Window::fill = (direction, screen) ->
+  window = @chain()
+  window.screen(screen) if screen?
+  window.fill(direction).set()
+  window.to(NE).set() if direction is RIGHT # Ensure position for windows larger than expected
 
 # Position Bindings
 
@@ -155,20 +163,30 @@ Key.on 'z', CONTROL_ALT_SHIFT, ->
   window = Window.focused()
   window?.to(CENTRE, window.screen().next())
 
-# Size Bindings
+# Fill Bindings
 
 Key.on 'å', CONTROL_SHIFT, ->
-  Window.focused()?.chain().fill().set()
+  Window.focused()?.fill()
 
 Key.on 'o', CONTROL_SHIFT, ->
-  Window.focused()?.chain().fill(LEFT).set()
+  Window.focused()?.fill(LEFT)
 
 Key.on 'p', CONTROL_SHIFT, ->
-  Window.focused()?.chain()
-    .fill(RIGHT)
-    .set()
-    .to(NE) # Ensure position for windows larger than expected
-    .set()
+  Window.focused()?.fill(RIGHT)
+
+Key.on 'å', CONTROL_ALT_SHIFT, ->
+  window = Window.focused()
+  window?.fill('', window.screen().next())
+
+Key.on 'o', CONTROL_ALT_SHIFT, ->
+  window = Window.focused()
+  window?.fill(LEFT, window.screen().next())
+
+Key.on 'p', CONTROL_ALT_SHIFT, ->
+  window = Window.focused()
+  window?.fill(RIGHT, window.screen().next())
+
+# Size Bindings
 
 Key.on 'ä', CONTROL_SHIFT, ->
   Window.focused()?.chain().resize(width: INCREMENT).set()
