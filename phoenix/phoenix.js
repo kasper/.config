@@ -27,6 +27,7 @@ class ChainWindow
     @parent = @window.screen().visibleFrameInRectangle()
     @update()
 
+  # Update frames
   update: ->
     @frame = @window.frame()
     @difference =
@@ -35,17 +36,20 @@ class ChainWindow
       width: @parent.width - @frame.width
       height: @parent.height - @frame.height
 
+  # Set frame
   set: ->
     @window.setFrame @frame
     @update()
     this
 
+  # Move to screen
   screen: (screen) ->
     @parent = screen.visibleFrameInRectangle()
     @update()
     @maximise() if @difference.width < 0 or @difference.height < 0
     this
 
+  # Move to cardinal directions NW, NE, SE, SW or relative direction CENTRE
   to: (direction) ->
 
     # X-coordinate
@@ -68,6 +72,7 @@ class ChainWindow
 
     this
 
+  # Resize SE-corner by factor
   resize: (factor) ->
     if factor.width?
       delta = Math.min @parent.width * factor.width, @difference.width + @difference.x - @margin
@@ -77,15 +82,18 @@ class ChainWindow
       @frame.height += delta
     this
 
+  # Maximise to fill whole screen
   maximise: ->
     @frame.width = @parent.width - (2 * @margin)
     @frame.height = @parent.height - (2 * @margin)
     this
 
+  # Halve width
   halve: ->
     @frame.width /= 2
     this
 
+  # Fill relatively to LEFT or RIGHT-side of screen, or fill whole screen
   fill: (direction) ->
     @maximise()
     @halve() if direction?
@@ -95,6 +103,7 @@ class ChainWindow
       else @to NW
     this
 
+# Chain a Window-object
 Window::chain = ->
   new ChainWindow this
 
