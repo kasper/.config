@@ -69,11 +69,11 @@ class ChainWindow
     this
 
   resize: (factor) ->
-    if factor.x?
-      delta = Math.min @parent.width * factor.x, @difference.width + @difference.x - @margin
+    if factor.width?
+      delta = Math.min @parent.width * factor.width, @difference.width + @difference.x - @margin
       @frame.width += delta
-    if factor.y?
-      delta = Math.min @parent.height * factor.y, @difference.height - @frame.y + @margin + HIDDEN_DOCK_MARGIN
+    if factor.height?
+      delta = Math.min @parent.height * factor.height, @difference.height - @frame.y + @margin + HIDDEN_DOCK_MARGIN
       @frame.height += delta
     this
 
@@ -139,17 +139,17 @@ Key.on 'p', CONTROL_SHIFT, ->
     .to(NE) # Ensure position for windows larger than expected
     .set()
 
-Key.on '¨', CONTROL_SHIFT, ->
-  Window.focused()?.chain().resize(y: -INCREMENT).set()
-
-Key.on "'", CONTROL_SHIFT, ->
-  Window.focused()?.chain().resize(y: INCREMENT).set()
+Key.on 'ä', CONTROL_SHIFT, ->
+  Window.focused()?.chain().resize(width: INCREMENT).set()
 
 Key.on 'ö', CONTROL_SHIFT, ->
-  Window.focused()?.chain().resize(x: -INCREMENT).set()
+  Window.focused()?.chain().resize(width: -INCREMENT).set()
 
-Key.on 'ä', CONTROL_SHIFT, ->
-  Window.focused()?.chain().resize(x: INCREMENT).set()
+Key.on "'", CONTROL_SHIFT, ->
+  Window.focused()?.chain().resize(height: INCREMENT).set()
+
+Key.on '¨', CONTROL_SHIFT, ->
+  Window.focused()?.chain().resize(height: -INCREMENT).set()
 
 # Focus Bindings
 
