@@ -126,6 +126,10 @@ Window::fill = (direction, screen) ->
   window.fill(direction).set()
   window.to(NE).set() if direction is RIGHT # Ensure position for windows larger than expected
 
+# Resize by factor
+Window::resize = (factor) ->
+  @chain().resize(factor).set()
+
 # Position Bindings
 
 Key.on 'q', CONTROL_SHIFT, ->
@@ -189,16 +193,16 @@ Key.on 'p', CONTROL_ALT_SHIFT, ->
 # Size Bindings
 
 Key.on 'ä', CONTROL_SHIFT, ->
-  Window.focused()?.chain().resize(width: INCREMENT).set()
+  Window.focused()?.resize(width: INCREMENT)
 
 Key.on 'ö', CONTROL_SHIFT, ->
-  Window.focused()?.chain().resize(width: -INCREMENT).set()
+  Window.focused()?.resize(width: -INCREMENT)
 
 Key.on "'", CONTROL_SHIFT, ->
-  Window.focused()?.chain().resize(height: INCREMENT).set()
+  Window.focused()?.resize(height: INCREMENT)
 
 Key.on '¨', CONTROL_SHIFT, ->
-  Window.focused()?.chain().resize(height: -INCREMENT).set()
+  Window.focused()?.resize(height: -INCREMENT)
 
 # Focus Bindings
 
