@@ -155,4 +155,4 @@ Key.on 'ä', CONTROL_SHIFT, ->
 
 Key.on '<', CONTROL_SHIFT, ->
   [ ..., last ] = Window.recent()
-  last?.focus();
+  last?.focus()
