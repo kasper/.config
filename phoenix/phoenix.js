@@ -9,6 +9,7 @@ Phoenix.set
 HIDDEN_DOCK_MARGIN = 3
 INCREMENT = 0.05
 CONTROL_SHIFT = [ 'ctrl', 'shift' ]
+CONTROL_ALT_SHIFT = [ 'ctrl', 'alt', 'shift' ]
 
 # Relative Directions
 LEFT = 'left'
@@ -111,32 +112,48 @@ class ChainWindow
 Window::chain = ->
   new ChainWindow this
 
-# Screen Bindings
-
-Key.on 'e', CONTROL_SHIFT, ->
-  window = Window.focused()
-  window?.chain()
-    .screen(window.screen().next())
-    .fit()
-    .to(NW)
-    .set()
+# To direction in screen
+Window::to = (direction, screen) ->
+  window = @chain()
+  window.screen(screen).fit() if screen?
+  window.to(direction).set()
 
 # Position Bindings
 
 Key.on 'q', CONTROL_SHIFT, ->
-  Window.focused()?.chain().to(NW).set()
+  Window.focused()?.to(NW)
 
 Key.on 'w', CONTROL_SHIFT, ->
-  Window.focused()?.chain().to(NE).set()
+  Window.focused()?.to(NE)
 
 Key.on 's', CONTROL_SHIFT, ->
-  Window.focused()?.chain().to(SE).set()
+  Window.focused()?.to(SE)
 
 Key.on 'a', CONTROL_SHIFT, ->
-  Window.focused()?.chain().to(SW).set()
+  Window.focused()?.to(SW)
 
 Key.on 'z', CONTROL_SHIFT, ->
-  Window.focused()?.chain().to(CENTRE).set()
+  Window.focused()?.to(CENTRE)
+
+Key.on 'q', CONTROL_ALT_SHIFT, ->
+  window = Window.focused()
+  window?.to(NW, window.screen().next())
+
+Key.on 'w', CONTROL_ALT_SHIFT, ->
+  window = Window.focused()
+  window?.to(NE, window.screen().next())
+
+Key.on 's', CONTROL_ALT_SHIFT, ->
+  window = Window.focused()
+  window?.to(SE, window.screen().next())
+
+Key.on 'a', CONTROL_ALT_SHIFT, ->
+  window = Window.focused()
+  window?.to(SW, window.screen().next())
+
+Key.on 'z', CONTROL_ALT_SHIFT, ->
+  window = Window.focused()
+  window?.to(CENTRE, window.screen().next())
 
 # Size Bindings
 
