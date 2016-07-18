@@ -46,7 +46,6 @@ class ChainWindow
   screen: (screen) ->
     @parent = screen.visibleFrameInRectangle()
     @update()
-    @maximise() if @difference.width < 0 or @difference.height < 0
     this
 
   # Move to cardinal directions NW, NE, SE, SW or relative direction CENTRE
@@ -93,6 +92,11 @@ class ChainWindow
     @frame.width /= 2
     this
 
+  # Fit to screen
+  fit: ->
+    @maximise() if @difference.width < 0 or @difference.height < 0
+    this
+
   # Fill relatively to LEFT or RIGHT-side of screen, or fill whole screen
   fill: (direction) ->
     @maximise()
@@ -113,6 +117,7 @@ Key.on 'e', CONTROL_SHIFT, ->
   window = Window.focused()
   window?.chain()
     .screen(window.screen().next())
+    .fit()
     .to(NW)
     .set()
 
