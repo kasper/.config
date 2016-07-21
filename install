@@ -1,18 +1,22 @@
 #!/bin/bash
 
-cd "$(dirname $0)"
-link_directory="$PWD/link"
-cd -
+# Colours
+reset=$(tput sgr0)
+bold=$(tput bold)
+blue=$(tput setaf 4)
 
-# Helpers
-
+# Helper
 describe() {
-  echo -e "\n\033[1m\033[34m$1\033[0m\n"
+  echo -e "\n${bold}${blue}${1}${reset}\n"
 }
 
 # Install configurations
 
-describe "Linking configurations..."
+cd "$(dirname $0)"
+link_directory="$PWD/link"
+cd -
+
+describe 'Linking configurations...'
 
 for file in $(find "$link_directory" -type f); do
 
@@ -37,4 +41,4 @@ for file in $(find "$link_directory" -type f); do
 
 done
 
-describe "Done."
+describe 'Done.'
