@@ -26,7 +26,7 @@ class ChainWindow
 
   constructor: (@window, @margin = 10) ->
     @frame = @window.frame()
-    @parent = @window.screen().visibleFrameInRectangle()
+    @parent = @window.screen().flippedVisibleFrame()
 
   # Difference frame
   difference: ->
@@ -43,7 +43,7 @@ class ChainWindow
 
   # Move to screen
   screen: (screen) ->
-    @parent = screen.visibleFrameInRectangle()
+    @parent = screen.flippedVisibleFrame()
     this
 
   # Move to cardinal directions NW, NE, SE, SW or relative direction CENTRE
