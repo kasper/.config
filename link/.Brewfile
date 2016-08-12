@@ -1,6 +1,7 @@
 brew 'git'
 brew 'gnupg'
 brew 'heroku'
+brew 'keybase'
 brew 'maven'
 brew 'node'
 brew 'rbenv'
