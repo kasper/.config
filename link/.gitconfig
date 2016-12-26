@@ -4,3 +4,5 @@
 	signingkey = 9693AAEF
 [push]
 	default = simple
+[gpg]
+	program = gpg1
