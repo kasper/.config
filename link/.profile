@@ -1,9 +1,10 @@
 # Colours
 reset=$(tput sgr0)
 bold=$(tput bold)
+blue=$(tput setaf 4)
 
 # Settings
-export PS1='\[$bold\]\W \$ \[$reset\]'
+export PS1='\[$bold\]\[$blue\]\W\[$reset\]\[$bold\] \$ \[$reset\]'
 export HISTCONTROL=ignoreboth
 export CLICOLOR=1
 export LSCOLORS=ExGxFxdaCxDaDahbadacec
