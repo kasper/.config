@@ -3,7 +3,7 @@ reset=$(tput sgr0)
 bold=$(tput bold)
 
 # Settings
-export PS1='${bold}\W \$ ${reset}'
+export PS1='\[$bold\]\W \$ \[$reset\]'
 export HISTCONTROL=ignoreboth
 export CLICOLOR=1
 export LSCOLORS=ExGxFxdaCxDaDahbadacec
