@@ -5,4 +5,4 @@
 [push]
 	default = simple
 [gpg]
-	program = gpg1
+	program = gpg
