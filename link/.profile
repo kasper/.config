@@ -11,6 +11,9 @@ export LSCOLORS=ExGxFxdaCxDaDahbadacec
 
 # Environments
 
+## GPG
+export GPG_TTY=$(tty)
+
 ## Java
 export JAVA_HOME=$(/usr/libexec/java_home)
 
