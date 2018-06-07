@@ -1,3 +1,4 @@
+brew 'bash-completion'
 brew 'git'
 brew 'gnupg'
 brew 'heroku'

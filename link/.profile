@@ -11,6 +11,9 @@ export LSCOLORS=ExGxFxdaCxDaDahbadacec
 
 # Environments
 
+## Brew
+[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
+
 ## GPG
 export GPG_TTY=$(tty)
 
