@@ -5,7 +5,6 @@ reset=$(tput sgr0)
 bold=$(tput bold)
 blue=$(tput setaf 4)
 
-# Helper
 describe() {
   echo -e "\n${bold}${blue}${1}${reset}\n"
 }
