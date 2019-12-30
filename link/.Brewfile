@@ -1,3 +1,5 @@
+tap 'heroku/brew'
+
 brew 'git'
 brew 'gnupg'
 brew 'heroku'
