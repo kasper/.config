@@ -1,211 +1,343 @@
-#!/usr/bin/env coffee -p
+// Preferences
+Phoenix.set({
+  daemon: true,
+  openAtLogin: true,
+});
 
-# Preferences
-Phoenix.set
-  daemon: true
-  openAtLogin: true
+// Globals
+const HIDDEN_DOCK_MARGIN = 3;
+const INCREMENT = 0.05;
+const CONTROL_SHIFT = ['ctrl', 'shift'];
+const CONTROL_ALT_SHIFT = ['ctrl', 'alt', 'shift'];
 
-# Globals
-HIDDEN_DOCK_MARGIN = 3
-INCREMENT = 0.05
-CONTROL_SHIFT = [ 'ctrl', 'shift' ]
-CONTROL_ALT_SHIFT = [ 'ctrl', 'alt', 'shift' ]
+// Relative Directions
+const LEFT = 'left';
+const RIGHT = 'right';
+const CENTRE = 'centre';
 
-# Relative Directions
-LEFT = 'left'
-RIGHT = 'right'
-CENTRE = 'centre'
+// Cardinal Directions
+const NW = 'nw';
+const NE = 'ne';
+const SE = 'se';
+const SW = 'sw';
 
-# Cardinal Directions
-NW = 'nw'
-NE = 'ne'
-SE = 'se'
-SW = 'sw'
+class ChainWindow {
+  constructor(window, margin = 10) {
+    this.window = window;
+    this.margin = margin;
+    this.frame = window.frame();
+    this.parent = window.screen().flippedVisibleFrame();
+  }
 
-class ChainWindow
+  // Difference frame
+  difference() {
+    const { parent, frame } = this;
+    return {
+      x: parent.x - frame.x,
+      y: parent.y - frame.y,
+      width: parent.width - frame.width,
+      height: parent.height - frame.height,
+    };
+  }
 
-  constructor: (@window, @margin = 10) ->
-    @frame = @window.frame()
-    @parent = @window.screen().flippedVisibleFrame()
+  // Set frame
+  set() {
+    const { window, frame } = this;
+    window.setFrame(frame);
+    this.frame = window.frame();
+    return this;
+  }
 
-  # Difference frame
-  difference: ->
-    x: @parent.x - @frame.x
-    y: @parent.y - @frame.y
-    width: @parent.width - @frame.width
-    height: @parent.height - @frame.height
+  // Move to screen
+  screen(screen) {
+    this.parent = screen.flippedVisibleFrame();
+    return this;
+  }
 
-  # Set frame
-  set: ->
-    @window.setFrame @frame
-    @frame = @window.frame()
-    this
+  // Move to cardinal directions NW, NE, SE, SW or relative direction CENTRE
+  to(direction) {
+    const { parent, margin } = this;
+    const difference = this.difference();
 
-  # Move to screen
-  screen: (screen) ->
-    @parent = screen.flippedVisibleFrame()
-    this
+    // X-coordinate
+    switch (direction) {
+      case NW:
+      case SW:
+        this.frame.x = parent.x + margin;
+        break;
+      case NE:
+      case SE:
+        this.frame.x = parent.x + difference.width - margin;
+        break;
+      case CENTRE:
+        this.frame.x = parent.x + (difference.width / 2);
+        break;
+      default:
+    }
 
-  # Move to cardinal directions NW, NE, SE, SW or relative direction CENTRE
-  to: (direction) ->
+    // Y-coordinate
+    switch (direction) {
+      case NW:
+      case NE:
+        this.frame.y = parent.y + margin;
+        break;
+      case SE:
+      case SW:
+        this.frame.y = parent.y + difference.height - margin;
+        break;
+      case CENTRE:
+        this.frame.y = parent.y + (difference.height / 2);
+        break;
+      default:
+    }
 
-    difference = @difference()
+    return this;
+  }
 
-    # X-coordinate
-    switch direction
-      when NW, SW
-        @frame.x = @parent.x + @margin
-      when NE, SE
-        @frame.x = @parent.x + difference.width - @margin
-      when CENTRE
-        @frame.x = @parent.x + (difference.width / 2)
+  // Resize SE-corner by factor
+  resize(factor) {
+    const { parent, margin, frame } = this;
+    const difference = this.difference();
+    let delta;
+    if (factor.width) {
+      delta = Math.min(parent.width * factor.width, difference.x + difference.width - margin);
+      this.frame.width += delta;
+    } else if (factor.height) {
+      delta = Math.min(
+        parent.height * factor.height,
+        difference.height - frame.y + margin + HIDDEN_DOCK_MARGIN,
+      );
+      this.frame.height += delta;
+    }
+    return this;
+  }
 
-    # Y-coordinate
-    switch direction
-      when NW, NE
-        @frame.y = @parent.y + @margin
-      when SE, SW
-        @frame.y = @parent.y + difference.height - @margin
-      when CENTRE
-        @frame.y = @parent.y + (difference.height / 2)
+  // Maximise to fill whole screen
+  maximise() {
+    const { parent, margin } = this;
+    this.frame.width = parent.width - (2 * margin);
+    this.frame.height = parent.height - (2 * margin);
+    return this;
+  }
 
-    this
+  // Halve width
+  halve() {
+    this.frame.width /= 2;
+    return this;
+  }
 
-  # Resize SE-corner by factor
-  resize: (factor) ->
-    difference = @difference()
-    if factor.width?
-      delta = Math.min @parent.width * factor.width, difference.x + difference.width - @margin
-      @frame.width += delta
-    if factor.height?
-      delta = Math.min @parent.height * factor.height, difference.height - @frame.y + @margin + HIDDEN_DOCK_MARGIN
-      @frame.height += delta
-    this
+  // Fit to screen
+  fit() {
+    const difference = this.difference();
+    if (difference.width < 0 || difference.height < 0) {
+      this.maximise();
+    }
+    return this;
+  }
 
-  # Maximise to fill whole screen
-  maximise: ->
-    @frame.width = @parent.width - (2 * @margin)
-    @frame.height = @parent.height - (2 * @margin)
-    this
+  // Fill relatively to LEFT or RIGHT-side of screen, or fill whole screen
+  fill(direction) {
+    this.maximise();
+    if (direction === LEFT || direction === RIGHT) {
+      this.halve();
+    }
+    switch (direction) {
+      case LEFT:
+        this.to(NW);
+        break;
+      case RIGHT:
+        this.to(NE);
+        break;
+      default:
+        this.to(NW);
+    }
+    return this;
+  }
+}
 
-  # Halve width
-  halve: ->
-    @frame.width /= 2
-    this
+// Chain a Window-object
+Window.prototype.chain = function () {
+  return new ChainWindow(this);
+};
 
-  # Fit to screen
-  fit: ->
-    difference = @difference()
-    @maximise() if difference.width < 0 or difference.height < 0
-    this
+// To direction in screen
+Window.prototype.to = function (direction, screen) {
+  const window = this.chain();
+  if (screen) {
+    window.screen(screen).fit();
+  }
+  window.to(direction).set();
+};
 
-  # Fill relatively to LEFT or RIGHT-side of screen, or fill whole screen
-  fill: (direction) ->
-    @maximise()
-    @halve() if direction in [ LEFT, RIGHT ]
-    switch direction
-      when LEFT then @to NW
-      when RIGHT then @to NE
-      else @to NW
-    this
+// Fill in screen
+Window.prototype.fill = function (direction, screen) {
+  const window = this.chain();
+  if (screen) {
+    window.screen(screen);
+  }
+  window.fill(direction).set();
+  // Ensure position for windows larger than expected
+  if (direction === RIGHT) {
+    window.to(NE).set();
+  }
+};
 
-# Chain a Window-object
-Window::chain = ->
-  new ChainWindow this
+// Resize by factor
+Window.prototype.resize = function (factor) {
+  this.chain().resize(factor).set();
+};
 
-# To direction in screen
-Window::to = (direction, screen) ->
-  window = @chain()
-  window.screen(screen).fit() if screen?
-  window.to(direction).set()
+/* Position Bindings */
 
-# Fill in screen
-Window::fill = (direction, screen) ->
-  window = @chain()
-  window.screen screen if screen?
-  window.fill(direction).set()
-  window.to(NE).set() if direction is RIGHT # Ensure position for windows larger than expected
+Key.on('q', CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.to(NW);
+  }
+});
 
-# Resize by factor
-Window::resize = (factor) ->
-  @chain().resize(factor).set()
+Key.on('w', CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.to(NE);
+  }
+});
 
-# Position Bindings
+Key.on('s', CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.to(SE);
+  }
+});
 
-Key.on 'q', CONTROL_SHIFT, ->
-  Window.focused()?.to NW
+Key.on('a', CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.to(SW);
+  }
+});
 
-Key.on 'w', CONTROL_SHIFT, ->
-  Window.focused()?.to NE
+Key.on('z', CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.to(CENTRE);
+  }
+});
 
-Key.on 's', CONTROL_SHIFT, ->
-  Window.focused()?.to SE
+Key.on('q', CONTROL_ALT_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.to(NW, window.screen().next());
+  }
+});
 
-Key.on 'a', CONTROL_SHIFT, ->
-  Window.focused()?.to SW
+Key.on('w', CONTROL_ALT_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.to(NE, window.screen().next());
+  }
+});
 
-Key.on 'z', CONTROL_SHIFT, ->
-  Window.focused()?.to CENTRE
+Key.on('s', CONTROL_ALT_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.to(SE, window.screen().next());
+  }
+});
 
-Key.on 'q', CONTROL_ALT_SHIFT, ->
-  window = Window.focused()
-  window?.to NW, window.screen().next()
+Key.on('a', CONTROL_ALT_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.to(SW, window.screen().next());
+  }
+});
 
-Key.on 'w', CONTROL_ALT_SHIFT, ->
-  window = Window.focused()
-  window?.to NE, window.screen().next()
+Key.on('z', CONTROL_ALT_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.to(CENTRE, window.screen().next());
+  }
+});
 
-Key.on 's', CONTROL_ALT_SHIFT, ->
-  window = Window.focused()
-  window?.to SE, window.screen().next()
+/* Fill Bindings */
 
-Key.on 'a', CONTROL_ALT_SHIFT, ->
-  window = Window.focused()
-  window?.to SW, window.screen().next()
+Key.on('å', CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.fill();
+  }
+});
 
-Key.on 'z', CONTROL_ALT_SHIFT, ->
-  window = Window.focused()
-  window?.to CENTRE, window.screen().next()
+Key.on('o', CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.fill(LEFT);
+  }
+});
 
-# Fill Bindings
+Key.on('p', CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.fill(RIGHT);
+  }
+});
 
-Key.on 'å', CONTROL_SHIFT, ->
-  Window.focused()?.fill()
+Key.on('å', CONTROL_ALT_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.fill('', window.screen().next());
+  }
+});
 
-Key.on 'o', CONTROL_SHIFT, ->
-  Window.focused()?.fill LEFT
+Key.on('o', CONTROL_ALT_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.fill(LEFT, window.screen().next());
+  }
+});
 
-Key.on 'p', CONTROL_SHIFT, ->
-  Window.focused()?.fill RIGHT
+Key.on('p', CONTROL_ALT_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.fill(RIGHT, window.screen().next());
+  }
+});
 
-Key.on 'å', CONTROL_ALT_SHIFT, ->
-  window = Window.focused()
-  window?.fill '', window.screen().next()
+/* Size Bindings */
 
-Key.on 'o', CONTROL_ALT_SHIFT, ->
-  window = Window.focused()
-  window?.fill LEFT, window.screen().next()
+Key.on('ä', CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.resize({ width: INCREMENT });
+  }
+});
 
-Key.on 'p', CONTROL_ALT_SHIFT, ->
-  window = Window.focused()
-  window?.fill RIGHT, window.screen().next()
+Key.on('ö', CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.resize({ width: -INCREMENT });
+  }
+});
 
-# Size Bindings
+Key.on("'", CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.resize({ height: INCREMENT });
+  }
+});
 
-Key.on 'ä', CONTROL_SHIFT, ->
-  Window.focused()?.resize width: INCREMENT
+Key.on('¨', CONTROL_SHIFT, () => {
+  const window = Window.focused();
+  if (window) {
+    window.resize({ height: -INCREMENT });
+  }
+});
 
-Key.on 'ö', CONTROL_SHIFT, ->
-  Window.focused()?.resize width: -INCREMENT
+/* Focus Bindings */
 
-Key.on "'", CONTROL_SHIFT, ->
-  Window.focused()?.resize height: INCREMENT
-
-Key.on '¨', CONTROL_SHIFT, ->
-  Window.focused()?.resize height: -INCREMENT
-
-# Focus Bindings
-
-Key.on '<', CONTROL_SHIFT, ->
-  [ ..., last ] = Window.recent()
-  last?.focus()
+Key.on('<', CONTROL_SHIFT, () => {
+  const last = _.last(Window.recent());
+  if (last) {
+    last.focus();
+  }
+});
