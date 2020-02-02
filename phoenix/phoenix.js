@@ -7,8 +7,8 @@ Phoenix.set({
 // Globals
 const HIDDEN_DOCK_MARGIN = 3;
 const INCREMENT = 0.05;
-const CONTROL_SHIFT = ['ctrl', 'shift'];
-const CONTROL_ALT_SHIFT = ['ctrl', 'alt', 'shift'];
+const CONTROL_SHIFT = ['control', 'shift'];
+const CONTROL_OPTION_SHIFT = ['control', 'option', 'shift'];
 
 // Relative Directions
 const LEFT = 'left';
@@ -224,35 +224,35 @@ Key.on('z', CONTROL_SHIFT, () => {
   }
 });
 
-Key.on('q', CONTROL_ALT_SHIFT, () => {
+Key.on('q', CONTROL_OPTION_SHIFT, () => {
   const window = Window.focused();
   if (window) {
     window.to(NW, window.screen().next());
   }
 });
 
-Key.on('w', CONTROL_ALT_SHIFT, () => {
+Key.on('w', CONTROL_OPTION_SHIFT, () => {
   const window = Window.focused();
   if (window) {
     window.to(NE, window.screen().next());
   }
 });
 
-Key.on('s', CONTROL_ALT_SHIFT, () => {
+Key.on('s', CONTROL_OPTION_SHIFT, () => {
   const window = Window.focused();
   if (window) {
     window.to(SE, window.screen().next());
   }
 });
 
-Key.on('a', CONTROL_ALT_SHIFT, () => {
+Key.on('a', CONTROL_OPTION_SHIFT, () => {
   const window = Window.focused();
   if (window) {
     window.to(SW, window.screen().next());
   }
 });
 
-Key.on('z', CONTROL_ALT_SHIFT, () => {
+Key.on('z', CONTROL_OPTION_SHIFT, () => {
   const window = Window.focused();
   if (window) {
     window.to(CENTRE, window.screen().next());
@@ -282,21 +282,21 @@ Key.on('p', CONTROL_SHIFT, () => {
   }
 });
 
-Key.on('å', CONTROL_ALT_SHIFT, () => {
+Key.on('å', CONTROL_OPTION_SHIFT, () => {
   const window = Window.focused();
   if (window) {
     window.fill('', window.screen().next());
   }
 });
 
-Key.on('o', CONTROL_ALT_SHIFT, () => {
+Key.on('o', CONTROL_OPTION_SHIFT, () => {
   const window = Window.focused();
   if (window) {
     window.fill(LEFT, window.screen().next());
   }
 });
 
-Key.on('p', CONTROL_ALT_SHIFT, () => {
+Key.on('p', CONTROL_OPTION_SHIFT, () => {
   const window = Window.focused();
   if (window) {
     window.fill(RIGHT, window.screen().next());
