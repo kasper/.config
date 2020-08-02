@@ -2,3 +2,5 @@
 	name = Kasper Hirvikoski
 	email = kasper.hirvikoski@gmail.com
 	signingKey = 9693AAEF
+[pull]
+	rebase = false
