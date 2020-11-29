@@ -12,6 +12,8 @@
   },
   "xo": {
     "extends": "eslint-config-airbnb-base",
+    "prettier": true,
+    "space": true,
     "globals": [
       "_",
       "Key",
