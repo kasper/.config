@@ -70,7 +70,7 @@ class ChainWindow {
         this.frame.x = parent.x + difference.width - margin;
         break;
       case CENTRE:
-        this.frame.x = parent.x + (difference.width / 2);
+        this.frame.x = parent.x + difference.width / 2;
         break;
       default:
     }
@@ -86,7 +86,7 @@ class ChainWindow {
         this.frame.y = parent.y + difference.height - margin;
         break;
       case CENTRE:
-        this.frame.y = parent.y + (difference.height / 2);
+        this.frame.y = parent.y + difference.height / 2;
         break;
       default:
     }
@@ -100,12 +100,15 @@ class ChainWindow {
     const difference = this.difference();
     let delta;
     if (factor.width) {
-      delta = Math.min(parent.width * factor.width, difference.x + difference.width - margin);
+      delta = Math.min(
+        parent.width * factor.width,
+        difference.x + difference.width - margin
+      );
       this.frame.width += delta;
     } else if (factor.height) {
       delta = Math.min(
         parent.height * factor.height,
-        difference.height - frame.y + margin + HIDDEN_DOCK_MARGIN,
+        difference.height - frame.y + margin + HIDDEN_DOCK_MARGIN
       );
       this.frame.height += delta;
     }
@@ -115,8 +118,8 @@ class ChainWindow {
   // Maximise to fill whole screen
   maximise() {
     const { parent, margin } = this;
-    this.frame.width = parent.width - (2 * margin);
-    this.frame.height = parent.height - (2 * margin);
+    this.frame.width = parent.width - 2 * margin;
+    this.frame.height = parent.height - 2 * margin;
     return this;
   }
 
