@@ -7,8 +7,8 @@
     "lint:fix": "xo --fix"
   },
   "devDependencies": {
-    "eslint-config-airbnb-base": "14.2.0",
-    "xo": "0.32.1"
+    "eslint-config-airbnb-base": "14.2.1",
+    "xo": "0.35.0"
   },
   "xo": {
     "extends": "eslint-config-airbnb-base",
