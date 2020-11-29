@@ -344,3 +344,9 @@ Key.on('<', CONTROL_SHIFT, () => {
     last.focus();
   }
 });
+
+/* Volume Bindings */
+
+Key.on('v', CONTROL_SHIFT, () => {
+  Task.run('/usr/bin/osascript', ['-e', 'set volume output volume 25']);
+});
