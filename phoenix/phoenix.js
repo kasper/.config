@@ -102,13 +102,13 @@ class ChainWindow {
     if (factor.width) {
       delta = Math.min(
         parent.width * factor.width,
-        difference.x + difference.width - margin
+        difference.x + difference.width - margin,
       );
       this.frame.width += delta;
     } else if (factor.height) {
       delta = Math.min(
         parent.height * factor.height,
-        difference.height - frame.y + margin + HIDDEN_DOCK_MARGIN
+        difference.height - frame.y + margin + HIDDEN_DOCK_MARGIN,
       );
       this.frame.height += delta;
     }
