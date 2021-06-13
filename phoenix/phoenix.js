@@ -348,5 +348,19 @@ Key.on('<', CONTROL_SHIFT, () => {
 /* Volume Bindings */
 
 Key.on('v', CONTROL_SHIFT, () => {
-  Task.run('/usr/bin/osascript', ['-e', 'set volume output volume 25']);
+  Task.run('/usr/bin/osascript', ['-e', 'set volume output volume 25'], () => {
+    Modal.build({
+      origin: (frame) => {
+        const screen = Screen.main().flippedVisibleFrame();
+        return {
+          x: screen.x + screen.width / 2 - frame.width / 2,
+          y: screen.y + screen.height / 2 - frame.height / 2,
+        };
+      },
+      duration: 1,
+      weight: 48,
+      appearance: 'light',
+      text: '🔉',
+    }).show();
+  });
 });

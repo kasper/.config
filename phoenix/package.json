@@ -17,7 +17,9 @@
     "globals": [
       "_",
       "Key",
+      "Modal",
       "Phoenix",
+      "Screen",
       "Task",
       "Window"
     ]
