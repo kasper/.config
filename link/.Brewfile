@@ -2,6 +2,7 @@ tap 'heroku/brew'
 
 brew 'git'
 brew 'gnupg'
+brew 'go'
 brew 'heroku'
 brew 'nvm'
 brew 'rbenv'
