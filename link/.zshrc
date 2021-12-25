@@ -8,6 +8,9 @@ export PROMPT='%B%F{blue}%1~%f%b %B%#%b '
 
 # Environments
 
+## Homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 ## GPG
 export GPG_TTY=$(tty)
 
