@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "15.0.0",
-    "xo": "0.40.2"
+    "xo": "0.53.1"
   },
   "xo": {
     "extends": "eslint-config-airbnb-base",
