@@ -22,6 +22,10 @@
       "Screen",
       "Task",
       "Window"
-    ]
+    ],
+    "rules": {
+      "unicorn/no-empty-file": "off",
+      "unicorn/switch-case-braces": "off"
+    }
   }
 }
