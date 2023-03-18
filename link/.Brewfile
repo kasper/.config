@@ -1,3 +1,4 @@
+brew 'clang-format'
 brew 'git'
 brew 'gnupg'
 brew 'go'
