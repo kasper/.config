@@ -8,3 +8,5 @@ brew 'rbenv-default-gems'
 brew 'tree'
 brew 'watch'
 brew 'wget'
+
+cask 'claude-code'
