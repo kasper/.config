@@ -23,7 +23,7 @@ for file in $(find "$link_directory" -type f); do
   target_directory="$HOME/$(dirname $relative_path)"
 
   # Do not override existing configuration
-  if [ -f "$HOME/$relative_path" ]; then
+  if [ -e "$HOME/$relative_path" ] || [ -L "$HOME/$relative_path" ]; then
     echo "Configuration “"$relative_path"” already exists. Skipping..."
     continue
   fi

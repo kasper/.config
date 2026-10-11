@@ -14,6 +14,11 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 ## GPG
 export GPG_TTY=$(tty)
 
+## Completion
+autoload -Uz compinit bashcompinit
+compinit
+bashcompinit
+
 ## NVM
 export NVM_DIR="$HOME/.nvm"
 [ -f /opt/homebrew/opt/nvm/nvm.sh ] && . /opt/homebrew/opt/nvm/nvm.sh
