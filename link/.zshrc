@@ -6,18 +6,20 @@ export CLICOLOR=1
 export LSCOLORS=ExGxFxdaCxDaDahbadacec
 export PROMPT='%B%F{blue}%1~%f%b %B%#%b '
 
-# Environments
+# Homebrew
 
-## Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-## GPG
-export GPG_TTY=$(tty)
+# Completion
 
-## Completion
 autoload -Uz compinit bashcompinit
 compinit
 bashcompinit
+
+# Environments
+
+## GPG
+export GPG_TTY=$(tty)
 
 ## NVM
 export NVM_DIR="$HOME/.nvm"
